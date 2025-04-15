@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -16,6 +14,8 @@ import javax.xml.stream.events.XMLEvent;
 
 public class XmlHandler implements Handler {
     private Handler nextHandler;
+    private List<Monster> monsters = new ArrayList<>();
+    
     @Override
     public void setNext(Handler nextHandler) {
         this.nextHandler = nextHandler;
@@ -40,7 +40,6 @@ public class XmlHandler implements Handler {
     }
 
     private void parseXmlFile(String filePath) throws XMLStreamException {
-        List<Monster> monsters = new ArrayList<>();
         Monster monster = null;
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         try {
@@ -117,6 +116,10 @@ public class XmlHandler implements Handler {
         } catch (XMLStreamException e) {
             System.err.println("Ошибка при чтении XML: " + e.getMessage());
         }
+    }
+    
+    public List<Monster> getMonsters() {
+        return monsters;
     }
     
 }
