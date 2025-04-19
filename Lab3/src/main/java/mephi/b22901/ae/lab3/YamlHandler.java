@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class YamlHandler implements Handler {
     private Handler nextHandler;
-    private MonsterStorage monsterStorage;
+    private MonsterStorage monsterStorage = new MonsterStorage();
 
     @Override
     public void setNext(Handler nextHandler) {
@@ -46,7 +46,7 @@ public class YamlHandler implements Handler {
                 monster.setInfo((String) monsterData.get("Описание"));
                 monster.setDanger((Integer) monsterData.get("Опасность"));
                 monster.setResidence((String) monsterData.get("Обитание"));
-                monster.setFirstMention((String) monsterData.get("ПервоеУпоминание"));
+                monster.setFirstMention((String) monsterData.get("ПервоеУпоминание").toString());
                 monster.setVulnerability((String) monsterData.get("УязвимостьКМагии"));
                 monster.setHeight((String) monsterData.get("РостМ")); // Оставляем как String
                 monster.setWeight((String) monsterData.get("ВесКг")); // Оставляем как String

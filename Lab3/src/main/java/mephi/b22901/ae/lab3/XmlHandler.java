@@ -11,7 +11,7 @@ import java.util.List;
 
 public class XmlHandler implements Handler {
     private Handler nextHandler;
-    private MonsterStorage monsterStorage;
+    private MonsterStorage monsterStorage = new MonsterStorage();
 
     @Override
     public void setNext(Handler nextHandler) {
