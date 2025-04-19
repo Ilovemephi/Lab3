@@ -132,11 +132,7 @@ public class Monster {
     
     @Override
     public String toString() {
-        return "Monster{name='" + name + "', description='" + info + "', dangerLevel=" + danger +
-                ", habitat='" + residence + "', firstMention='" + firstMention + "', magicVulnerability='" + vulnerability +
-                "', height='" + height + "', weight='" + weight + "', immunities=" + immunity +
-                ", activityTime='" + activityTime + "', poisonRecipe='" + recipe + "', preparationTime=" + time +
-                ", effectiveness='" + efficiency + "', infoType='" + infoType + "'}";
+        return name;
     }
        
 }

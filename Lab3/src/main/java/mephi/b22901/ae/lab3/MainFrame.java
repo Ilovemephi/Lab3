@@ -112,12 +112,33 @@ public class MainFrame extends JFrame {
         return jsonHandler;
     }
 
-    private void updateTree(List<Monster> monsters) {
+   private void updateTree(List<Monster> monsters) {
+        // Распределяем монстров по типам
         for (Monster monster : monsters) {
-            DefaultMutableTreeNode monsterNode = new DefaultMutableTreeNode(monster);
-            root.add(monsterNode);
+            String infoType = monster.getInfoType();
+            DefaultMutableTreeNode typeNode = findOrCreateNode(root, infoType); // Находим или создаем узел для типа
+            DefaultMutableTreeNode monsterNode = new DefaultMutableTreeNode(monster); // Создаем узел для монстра
+            typeNode.add(monsterNode); // Добавляем монстра в соответствующий узел
         }
+
+        // Обновляем модель дерева
         ((DefaultTreeModel) monsterTree.getModel()).reload();
+    }
+
+    // Вспомогательный метод для поиска или создания узла
+    private DefaultMutableTreeNode findOrCreateNode(DefaultMutableTreeNode parentNode, String nodeName) {
+        // Ищем узел с указанным именем среди дочерних элементов
+        for (int i = 0; i < parentNode.getChildCount(); i++) {
+            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) parentNode.getChildAt(i);
+            if (childNode.getUserObject().equals(nodeName)) {
+                return childNode;
+            }
+        }
+
+        // Если узел не найден, создаем новый
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeName);
+        parentNode.add(newNode);
+        return newNode;
     }
 
    
