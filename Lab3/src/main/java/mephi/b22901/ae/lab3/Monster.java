@@ -11,8 +11,8 @@ public class Monster {
     private String residence;
     private String firstMention;
     private String vulnerability;
-    private int height;
-    private int weight;
+    private String height;
+    private String weight;
     private String immunity;
     private String activityTime;
     private String recipe;
@@ -47,11 +47,11 @@ public class Monster {
         this.vulnerability = vulnerability;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(String height) {
         this.height = height;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
     }
 
@@ -102,11 +102,11 @@ public class Monster {
         return vulnerability; 
     }
     
-    public int getHeight() { 
+    public String getHeight() { 
         return height; 
     }
     
-    public int getWeight() { 
+    public String getWeight() { 
         return weight; 
     }
     
@@ -128,6 +128,15 @@ public class Monster {
     
     public String getEfficiency() { 
         return efficiency; 
+    }
+    
+    @Override
+    public String toString() {
+        return "Monster{name='" + name + "', description='" + info + "', dangerLevel=" + danger +
+                ", habitat='" + residence + "', firstMention='" + firstMention + "', magicVulnerability='" + vulnerability +
+                "', height='" + height + "', weight='" + weight + "', immunities=" + immunity +
+                ", activityTime='" + activityTime + "', poisonRecipe='" + recipe + "', preparationTime=" + time +
+                ", effectiveness='" + efficiency + "', infoType='" + infoType + "'}";
     }
        
 }
