@@ -3,13 +3,6 @@ package mephi.b22901.ae.lab3;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MonsterPanel extends JFrame {
     private Monster monster;
@@ -24,7 +17,6 @@ public class MonsterPanel extends JFrame {
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
 
-        // Поля для отображения информации
         JLabel nameLabel = new JLabel("Имя: " + monster.getName());
         JLabel dangerLabel = new JLabel("Уровень опасности: " + monster.getDanger());
         JLabel residenceLabel = new JLabel("Место обитания: " + monster.getResidence());
@@ -38,7 +30,6 @@ public class MonsterPanel extends JFrame {
         JLabel timeLabel = new JLabel("Время приготовления (мин): " + monster.getTime());
         JLabel efficiencyLabel = new JLabel("Эффективность: " + monster.getEfficiency());
 
-        // Поле для редактирования описания
         JTextArea infoTextArea = new JTextArea(monster.getInfo(), 5, 20);
         JScrollPane infoScrollPane = new JScrollPane(infoTextArea);
 
@@ -46,7 +37,7 @@ public class MonsterPanel extends JFrame {
         saveButton.addActionListener(e -> {
             String newInfo = infoTextArea.getText();
             monster.setInfo(newInfo);
-            monsterStorage.updateMonster(monster);  // Обновляем в хранилище
+            monsterStorage.updateMonster(monster);  
             JOptionPane.showMessageDialog(this, "Изменения сохранены!");
         });
 

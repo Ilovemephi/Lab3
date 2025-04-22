@@ -25,7 +25,6 @@ public class MainFrame extends JFrame {
 
         monsterStorage = new MonsterStorage();
 
-        // Создаем панель для кнопок
         JPanel buttonPanel = new JPanel();
         JButton importButton = new JButton("Импортировать файлы");
         JButton exportButton = new JButton("Экспортировать файл");
@@ -36,12 +35,10 @@ public class MainFrame extends JFrame {
         buttonPanel.add(importButton);
         buttonPanel.add(exportButton);
 
-        // Создаем дерево монстров
         root = new DefaultMutableTreeNode("Монстры");
         monsterTree = new JTree(root);
         monsterTree.addMouseListener(new TreeClickListener());
 
-        // Добавляем компоненты на главную панель
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(buttonPanel, BorderLayout.NORTH);
         mainPanel.add(new JScrollPane(monsterTree), BorderLayout.CENTER);
@@ -85,7 +82,7 @@ public class MainFrame extends JFrame {
                 return;
             }
 
-            String fileType = (String) selectedNode.getUserObject(); // Тип файла (JSON, XML, YAML)
+            String fileType = (String) selectedNode.getUserObject(); 
             List<Monster> allMonsters = monsterStorage.getAllMonsters();
             if (allMonsters.isEmpty()) {
                 JOptionPane.showMessageDialog(
@@ -121,28 +118,14 @@ public class MainFrame extends JFrame {
                             yamlHandler.exportData(filePath, allMonsters);
                             break;
                         default:
-                            JOptionPane.showMessageDialog(
-                                MainFrame.this,
-                                "Неподдерживаемый формат файла: " + fileType,
-                                "Ошибка",
-                                JOptionPane.ERROR_MESSAGE
-                            );
+                            JOptionPane.showMessageDialog(MainFrame.this, "Неподдерживаемый формат файла: " + fileType,  "Ошибка", JOptionPane.ERROR_MESSAGE);
                             return;
                     }
 
-                    JOptionPane.showMessageDialog(
-                        MainFrame.this,
-                        "Экспорт завершен! Файл сохранен: " + filePath,
-                        "Успех",
-                        JOptionPane.INFORMATION_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog( MainFrame.this, "Экспорт завершен! Файл сохранен: " + filePath, "Успех", JOptionPane.INFORMATION_MESSAGE);    
+                    
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(
-                        MainFrame.this,
-                        "Ошибка при экспорте: " + ex.getMessage(),
-                        "Ошибка",
-                        JOptionPane.ERROR_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(MainFrame.this, "Ошибка при экспорте: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -151,7 +134,7 @@ public class MainFrame extends JFrame {
     private class TreeClickListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) { // Двойной клик
+            if (e.getClickCount() == 2) { 
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) monsterTree.getLastSelectedPathComponent();
                 if (node != null && node.getUserObject() instanceof Monster) {
                     Monster selectedMonster = (Monster) node.getUserObject();
@@ -175,9 +158,9 @@ public class MainFrame extends JFrame {
     private void updateTree(List<Monster> monsters) {
         for (Monster monster : monsters) {
             String infoType = monster.getInfoType();
-            DefaultMutableTreeNode typeNode = findOrCreateNode(root, infoType); // Находим или создаем узел для типа
-            DefaultMutableTreeNode monsterNode = new DefaultMutableTreeNode(monster); // Создаем узел для монстра
-            typeNode.add(monsterNode); // Добавляем монстра в соответствующий узел
+            DefaultMutableTreeNode typeNode = findOrCreateNode(root, infoType); 
+            DefaultMutableTreeNode monsterNode = new DefaultMutableTreeNode(monster); 
+            typeNode.add(monsterNode); 
         }
 
         ((DefaultTreeModel) monsterTree.getModel()).reload();

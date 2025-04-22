@@ -15,28 +15,13 @@ public class MonsterStorage {
     private Set<String> importedFormats = new HashSet<>();
     private Set<String> monsterNames = new HashSet<>();    
 
-//    public void addMonsters(List<Monster> newMonsters) {
-//        for (Monster monster : newMonsters) {
-//            String monsterName = monster.getName();
-//            if (!monsterNames.contains(monsterName)) { 
-//                monsters.add(monster); 
-//                monsterNames.add(monsterName); 
-//                importedFormats.add(monster.getInfoType()); 
-//                System.out.println("Добавлен монстр: " + monsterName);
-//            } else {
-//                System.out.println("Дубликат монстра: " + monsterName);
-//            }
-//        }
-//    }
-    
-    
     
     public void addMonsters(List<Monster> newMonsters) {
     for (Monster monster : newMonsters) {
         if (!monsterNames.contains(monster.getName())) {
             monsters.add(monster);
             monsterNames.add(monster.getName());
-            importedFormats.add(monster.getInfoType()); // Добавляем формат
+            importedFormats.add(monster.getInfoType()); 
         }
     }
 }
@@ -59,8 +44,6 @@ public class MonsterStorage {
         }
         return null; 
     }
-    
-    
     
     
     public void updateMonster(Monster updatedMonster) {
