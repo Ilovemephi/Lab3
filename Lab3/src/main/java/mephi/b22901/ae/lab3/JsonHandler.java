@@ -78,6 +78,16 @@ public class JsonHandler implements Handler {
     
     @Override
     public void exportData(String filePath, List<Monster> monsters) {
+        
+        if (!filePath.toLowerCase().endsWith(".json")) {
+            if (nextHandler != null) {
+                nextHandler.exportData(filePath, monsters); 
+                return;
+            } else {
+                throw new IllegalArgumentException("Формат файла не поддерживается: " + filePath);
+            }
+        }
+        
         ObjectMapper objectMapper = new ObjectMapper();
         try (FileWriter writer = new FileWriter(filePath)) {
 

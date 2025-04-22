@@ -13,8 +13,9 @@ import java.awt.event.ActionListener;
 
 public class MonsterPanel extends JFrame {
     private Monster monster;
+    private MonsterStorage monsterStorage;
 
-    public MonsterPanel(Monster monster) {
+    public MonsterPanel(Monster monster,MonsterStorage monsterStorage) {
         this.monster = monster;
         setTitle("Детальная информация о монстре: " + monster.getName());
         setSize(500, 600);
@@ -42,13 +43,11 @@ public class MonsterPanel extends JFrame {
         JScrollPane infoScrollPane = new JScrollPane(infoTextArea);
 
         JButton saveButton = new JButton("Сохранить изменения");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String newInfo = infoTextArea.getText();
-                monster.setInfo(newInfo); // Обновляем описание монстра
-                JOptionPane.showMessageDialog(MonsterPanel.this, "Изменения сохранены!");
-            }
+        saveButton.addActionListener(e -> {
+            String newInfo = infoTextArea.getText();
+            monster.setInfo(newInfo);
+            monsterStorage.updateMonster(monster);  // Обновляем в хранилище
+            JOptionPane.showMessageDialog(this, "Изменения сохранены!");
         });
 
         panel.add(nameLabel);

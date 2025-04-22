@@ -1,10 +1,11 @@
 
 package mephi.b22901.ae.lab3;
 
+import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -27,7 +28,7 @@ public class MainFrame extends JFrame {
         // Создаем панель для кнопок
         JPanel buttonPanel = new JPanel();
         JButton importButton = new JButton("Импортировать файлы");
-        JButton exportButton = new JButton("Экспортировать файлы");
+        JButton exportButton = new JButton("Экспортировать файл");
 
         importButton.addActionListener(new ImportActionListener());
         exportButton.addActionListener(new ExportActionListener());
@@ -48,7 +49,7 @@ public class MainFrame extends JFrame {
         add(mainPanel);
     }
 
-    private class ImportActionListener implements java.awt.event.ActionListener {
+    private class ImportActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser(".");
@@ -70,20 +71,79 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private class ExportActionListener implements java.awt.event.ActionListener {
+    private class ExportActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) monsterTree.getLastSelectedPathComponent();
+            if (selectedNode == null || !(selectedNode.getUserObject() instanceof String)) {
+                JOptionPane.showMessageDialog(
+                    MainFrame.this,
+                    "Выберите файл для экспорта (JSON, XML или YAML).",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            String fileType = (String) selectedNode.getUserObject(); // Тип файла (JSON, XML, YAML)
+            List<Monster> allMonsters = monsterStorage.getAllMonsters();
+            if (allMonsters.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    MainFrame.this,
+                    "Нет данных для экспорта!",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
             JFileChooser fileChooser = new JFileChooser(".");
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setDialogTitle("Сохранить файл как...");
+
             int result = fileChooser.showSaveDialog(MainFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                File directory = fileChooser.getSelectedFile();
-                Handler handlerChain = createHandlerChain();
-                List<Monster> allMonsters = monsterStorage.getAllMonsters();
-                handlerChain.exportData(directory.getAbsolutePath() + "/monsters.json", allMonsters);
-                handlerChain.exportData(directory.getAbsolutePath() + "/monsters.xml", allMonsters);
-                handlerChain.exportData(directory.getAbsolutePath() + "/monsters.yaml", allMonsters);
-                JOptionPane.showMessageDialog(MainFrame.this, "Экспорт завершен!");
+                File selectedFile = fileChooser.getSelectedFile();
+                String filePath = ensureExtension(selectedFile.getAbsolutePath(), "." + fileType.toLowerCase());
+
+                try {
+                    switch (fileType.toUpperCase()) {
+                        case "JSON":
+                            Handler jsonHandler = new JsonHandler();
+                            jsonHandler.exportData(filePath, allMonsters);
+                            break;
+                        case "XML":
+                            Handler xmlHandler = new XmlHandler();
+                            xmlHandler.exportData(filePath, allMonsters);
+                            break;
+                        case "YAML":
+                            Handler yamlHandler = new YamlHandler();
+                            yamlHandler.exportData(filePath, allMonsters);
+                            break;
+                        default:
+                            JOptionPane.showMessageDialog(
+                                MainFrame.this,
+                                "Неподдерживаемый формат файла: " + fileType,
+                                "Ошибка",
+                                JOptionPane.ERROR_MESSAGE
+                            );
+                            return;
+                    }
+
+                    JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "Экспорт завершен! Файл сохранен: " + filePath,
+                        "Успех",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                        MainFrame.this,
+                        "Ошибка при экспорте: " + ex.getMessage(),
+                        "Ошибка",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
             }
         }
     }
@@ -95,7 +155,7 @@ public class MainFrame extends JFrame {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) monsterTree.getLastSelectedPathComponent();
                 if (node != null && node.getUserObject() instanceof Monster) {
                     Monster selectedMonster = (Monster) node.getUserObject();
-                    new MonsterPanel(selectedMonster).setVisible(true);
+                    new MonsterPanel(selectedMonster,  monsterStorage).setVisible(true);
                 }
             }
         }
@@ -112,8 +172,7 @@ public class MainFrame extends JFrame {
         return jsonHandler;
     }
 
-   private void updateTree(List<Monster> monsters) {
-        // Распределяем монстров по типам
+    private void updateTree(List<Monster> monsters) {
         for (Monster monster : monsters) {
             String infoType = monster.getInfoType();
             DefaultMutableTreeNode typeNode = findOrCreateNode(root, infoType); // Находим или создаем узел для типа
@@ -121,13 +180,10 @@ public class MainFrame extends JFrame {
             typeNode.add(monsterNode); // Добавляем монстра в соответствующий узел
         }
 
-        // Обновляем модель дерева
         ((DefaultTreeModel) monsterTree.getModel()).reload();
     }
 
-    // Вспомогательный метод для поиска или создания узла
     private DefaultMutableTreeNode findOrCreateNode(DefaultMutableTreeNode parentNode, String nodeName) {
-        // Ищем узел с указанным именем среди дочерних элементов
         for (int i = 0; i < parentNode.getChildCount(); i++) {
             DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) parentNode.getChildAt(i);
             if (childNode.getUserObject().equals(nodeName)) {
@@ -135,11 +191,15 @@ public class MainFrame extends JFrame {
             }
         }
 
-        // Если узел не найден, создаем новый
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeName);
         parentNode.add(newNode);
         return newNode;
     }
 
-   
+    private String ensureExtension(String filePath, String extension) {
+        if (!filePath.toLowerCase().endsWith(extension)) {
+            return filePath + extension;
+        }
+        return filePath;
+    }
 }

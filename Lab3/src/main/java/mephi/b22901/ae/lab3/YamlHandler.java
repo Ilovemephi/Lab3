@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.yaml.snakeyaml.DumperOptions;
 
 public class YamlHandler implements Handler {
     private Handler nextHandler;
@@ -48,8 +50,8 @@ public class YamlHandler implements Handler {
                 monster.setResidence((String) monsterData.get("Обитание"));
                 monster.setFirstMention((String) monsterData.get("ПервоеУпоминание").toString());
                 monster.setVulnerability((String) monsterData.get("УязвимостьКМагии"));
-                monster.setHeight((String) monsterData.get("РостМ")); // Оставляем как String
-                monster.setWeight((String) monsterData.get("ВесКг")); // Оставляем как String
+                monster.setHeight((String) monsterData.get("РостМ")); 
+                monster.setWeight((String) monsterData.get("ВесКг")); 
                 monster.setImmunity((String) monsterData.get("Иммунитеты"));
                 monster.setActivityTime((String) monsterData.get("ВремяАктивности"));
                 monster.setRecipe((String) monsterData.get("РецептЯда"));
@@ -70,12 +72,22 @@ public class YamlHandler implements Handler {
 
     @Override
     public void exportData(String filePath, List<Monster> monsters) {
-        Yaml yaml = new Yaml();
+        
+        if (!filePath.toLowerCase().endsWith(".yaml")) {
+            if (nextHandler != null) {
+                nextHandler.exportData(filePath, monsters); 
+                return;
+            } else {
+                throw new IllegalArgumentException("Формат файла не поддерживается: " + filePath);
+            }
+        }
+        
+        Yaml yaml = createYamlWithBlockStyle();
         try (FileWriter writer = new FileWriter(filePath)) {
             List<Map<String, Object>> yamlMonsters = new ArrayList<>();
 
             for (Monster monster : monsters) {
-                Map<String, Object> yamlMonster = new HashMap<>();
+                Map<String, Object> yamlMonster = new LinkedHashMap<>();
                 yamlMonster.put("Имя", monster.getName());
                 yamlMonster.put("Описание", monster.getInfo());
                 yamlMonster.put("Опасность", monster.getDanger());
@@ -92,8 +104,12 @@ public class YamlHandler implements Handler {
 
                 yamlMonsters.add(yamlMonster);
             }
+            
+            Map<String, Object> yamlData = new LinkedHashMap<>();
+            yamlData.put("Монстры", yamlMonsters);
+            
 
-            Map<String, Object> yamlData = Map.of("Монстры", yamlMonsters);
+
             yaml.dump(yamlData, writer);
 
             System.out.println("Данные успешно экспортированы в файл: " + filePath);
@@ -101,4 +117,12 @@ public class YamlHandler implements Handler {
             System.err.println("Ошибка при экспорте данных в YAML: " + e.getMessage());
         }
     }
+    
+    
+    private Yaml createYamlWithBlockStyle() {
+    DumperOptions options = new DumperOptions();
+    options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); 
+    options.setPrettyFlow(true); 
+    return new Yaml(options);
+}
 }

@@ -1,4 +1,4 @@
-
+    
 package mephi.b22901.ae.lab3;
 
 import javax.xml.stream.*;
@@ -133,6 +133,16 @@ public class XmlHandler implements Handler {
 
     @Override
     public void exportData(String filePath, List<Monster> monsters) {
+        
+        if (!filePath.toLowerCase().endsWith(".xml")) {
+            if (nextHandler != null) {
+                nextHandler.exportData(filePath, monsters); 
+                return;
+            } else {
+                throw new IllegalArgumentException("Формат файла не поддерживается: " + filePath);
+            }
+        }
+        
 
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
         try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
@@ -140,7 +150,7 @@ public class XmlHandler implements Handler {
 
 
             writer.writeStartDocument("UTF-8", "1.0");
-            writer.writeCharacters("\n"); // Для удобочитаемости
+            writer.writeCharacters("\n"); 
 
 
             writer.writeStartElement("Монстры");
