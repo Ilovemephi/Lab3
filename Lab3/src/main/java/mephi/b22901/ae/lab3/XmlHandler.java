@@ -125,6 +125,7 @@ public class XmlHandler implements Handler {
             System.out.println("Файл не содержит данных о монстрах.");
         } else {
             monsterStorage.addMonsters(monsters);
+            
         }
         return monsters;
     }
