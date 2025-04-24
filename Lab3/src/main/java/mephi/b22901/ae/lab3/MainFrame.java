@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
@@ -85,13 +84,12 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        // Показываем диалог выбора формата
+
         String fileType = showFormatSelectionDialog();
         if (fileType == null) {
-            return; // Пользователь отменил выбор
+            return; 
         }
 
-        // Диалог выбора файла
         JFileChooser fileChooser = new JFileChooser(".");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setDialogTitle("Сохранить файл как...");
@@ -150,13 +148,10 @@ public class MainFrame extends JFrame {
     
     
     private String showFormatSelectionDialog() {
-    // Получаем список всех импортированных форматов
     Set<String> importedFormats = monsterStorage.getImportedFormats();
     
-    // Создаем массив для JOptionPane
     String[] options = importedFormats.toArray(new String[0]);
-    
-    // Показываем диалог выбора
+
     String selectedFormat = (String) JOptionPane.showInputDialog(
         this,
         "Выберите формат для экспорта:",
