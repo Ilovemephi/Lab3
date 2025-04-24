@@ -95,7 +95,6 @@ public class XmlHandler implements Handler {
                     }
                 }
 
-
                 if (xmlEvent.isEndElement()) {
                     EndElement endElement = xmlEvent.asEndElement();
                     if (endElement.getName().getLocalPart().equals("Монстр") && monster != null) {
@@ -129,8 +128,6 @@ public class XmlHandler implements Handler {
         }
         return monsters;
     }
-    
-    
 
     @Override
     public void exportData(String filePath, List<Monster> monsters) {
@@ -144,19 +141,15 @@ public class XmlHandler implements Handler {
             }
         }
         
-
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
         try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
             XMLStreamWriter writer = xmlOutputFactory.createXMLStreamWriter(fileOutputStream, "UTF-8");
 
-
             writer.writeStartDocument("UTF-8", "1.0");
             writer.writeCharacters("\n"); 
-
-
+            
             writer.writeStartElement("Монстры");
             writer.writeCharacters("\n");
-
 
             for (Monster monster : monsters) {
                 writer.writeStartElement("Монстр");
@@ -182,7 +175,6 @@ public class XmlHandler implements Handler {
 
             writer.writeEndElement(); 
             writer.writeEndDocument();
-
             System.out.println("Данные успешно экспортированы в файл: " + filePath);
 
         } catch (Exception e) {
@@ -190,11 +182,11 @@ public class XmlHandler implements Handler {
         }
     }
 
-
     private void writeXmlElement(XMLStreamWriter writer, String tagName, String value) throws XMLStreamException {
         writer.writeStartElement(tagName);
         writer.writeCharacters(value != null ? value : "");
         writer.writeEndElement();
         writer.writeCharacters("\n");
     }
+    
 }
