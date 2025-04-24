@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.tree.DefaultTreeModel;
 
 public class MainFrame extends JFrame {
@@ -69,67 +71,67 @@ public class MainFrame extends JFrame {
     }
 
     private class ExportActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) monsterTree.getLastSelectedPathComponent();
-            if (selectedNode == null || !(selectedNode.getUserObject() instanceof String)) {
-                JOptionPane.showMessageDialog(
-                    MainFrame.this,
-                    "Выберите файл для экспорта (JSON, XML или YAML).",
-                    "Ошибка",
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Проверяем, есть ли что экспортировать
+        List<Monster> allMonsters = monsterStorage.getAllMonsters();
+        if (allMonsters.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                MainFrame.this,
+                "Нет данных для экспорта!",
+                "Ошибка",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
 
-            String fileType = (String) selectedNode.getUserObject(); 
-            List<Monster> allMonsters = monsterStorage.getAllMonsters();
-            if (allMonsters.isEmpty()) {
-                JOptionPane.showMessageDialog(
-                    MainFrame.this,
-                    "Нет данных для экспорта!",
-                    "Ошибка",
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
+        // Показываем диалог выбора формата
+        String fileType = showFormatSelectionDialog();
+        if (fileType == null) {
+            return; // Пользователь отменил выбор
+        }
 
-            JFileChooser fileChooser = new JFileChooser(".");
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fileChooser.setDialogTitle("Сохранить файл как...");
+        // Диалог выбора файла
+        JFileChooser fileChooser = new JFileChooser(".");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setDialogTitle("Сохранить файл как...");
+        fileChooser.setSelectedFile(new File("monsters." + fileType.toLowerCase()));
 
-            int result = fileChooser.showSaveDialog(MainFrame.this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                String filePath = ensureExtension(selectedFile.getAbsolutePath(), "." + fileType.toLowerCase());
+        int result = fileChooser.showSaveDialog(MainFrame.this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            String filePath = ensureExtension(selectedFile.getAbsolutePath(), "." + fileType.toLowerCase());
 
-                try {
-                    switch (fileType.toUpperCase()) {
-                        case "JSON":
-                            Handler jsonHandler = new JsonHandler();
-                            jsonHandler.exportData(filePath, allMonsters);
-                            break;
-                        case "XML":
-                            Handler xmlHandler = new XmlHandler();
-                            xmlHandler.exportData(filePath, allMonsters);
-                            break;
-                        case "YAML":
-                            Handler yamlHandler = new YamlHandler();
-                            yamlHandler.exportData(filePath, allMonsters);
-                            break;
-                        default:
-                            JOptionPane.showMessageDialog(MainFrame.this, "Неподдерживаемый формат файла: " + fileType,  "Ошибка", JOptionPane.ERROR_MESSAGE);
-                            return;
-                    }
-
-                    JOptionPane.showMessageDialog( MainFrame.this, "Экспорт завершен! Файл сохранен: " + filePath, "Успех", JOptionPane.INFORMATION_MESSAGE);    
-                    
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(MainFrame.this, "Ошибка при экспорте: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            try {
+                switch (fileType.toUpperCase()) {
+                    case "JSON":
+                        new JsonHandler().exportData(filePath, allMonsters);
+                        break;
+                    case "XML":
+                        new XmlHandler().exportData(filePath, allMonsters);
+                        break;
+                    case "YAML":
+                        new YamlHandler().exportData(filePath, allMonsters);
+                        break;
                 }
+
+                JOptionPane.showMessageDialog(
+                    MainFrame.this,
+                    "Экспорт завершен! Файл сохранен: " + filePath,
+                    "Успех",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                    MainFrame.this,
+                    "Ошибка при экспорте: " + ex.getMessage(),
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }
+}
 
     private class TreeClickListener extends MouseAdapter {
         @Override
@@ -143,6 +145,32 @@ public class MainFrame extends JFrame {
             }
         }
     }
+    
+    
+    
+    
+    private String showFormatSelectionDialog() {
+    // Получаем список всех импортированных форматов
+    Set<String> importedFormats = monsterStorage.getImportedFormats();
+    
+    // Создаем массив для JOptionPane
+    String[] options = importedFormats.toArray(new String[0]);
+    
+    // Показываем диалог выбора
+    String selectedFormat = (String) JOptionPane.showInputDialog(
+        this,
+        "Выберите формат для экспорта:",
+        "Экспорт данных",
+        JOptionPane.QUESTION_MESSAGE,
+        null,
+        options,
+        options.length > 0 ? options[0] : null
+    );
+    
+    return selectedFormat;
+}
+
+
 
     private Handler createHandlerChain() {
         Handler jsonHandler = new JsonHandler();
