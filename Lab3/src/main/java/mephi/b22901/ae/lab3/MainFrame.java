@@ -56,6 +56,9 @@ public class MainFrame extends JFrame {
             if (result == JFileChooser.APPROVE_OPTION) {
                 File[] selectedFiles = fileChooser.getSelectedFiles();
                 Handler handlerChain = createHandlerChain();
+                
+                monsterStorage.clearStorage();
+                
                 for (File file : selectedFiles) {
                     try {
                         List<Monster> monsters = handlerChain.importData(file.getAbsolutePath());
@@ -92,7 +95,7 @@ public class MainFrame extends JFrame {
         JFileChooser fileChooser = new JFileChooser(".");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setDialogTitle("Сохранить файл как...");
-        fileChooser.setSelectedFile(new File("monsters." + fileType.toLowerCase()));
+        fileChooser.setSelectedFile(new File("monsters" ));
 
         int result = fileChooser.showSaveDialog(MainFrame.this);
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -100,15 +103,17 @@ public class MainFrame extends JFrame {
             String filePath = ensureExtension(selectedFile.getAbsolutePath(), "." + fileType.toLowerCase());
 
             try {
+                
+                List<Monster> filteredMonsters = monsterStorage.getMonstersByInfoType(fileType);
                 switch (fileType.toUpperCase()) {
                     case "JSON":
-                        new JsonHandler().exportData(filePath, allMonsters);
+                        new JsonHandler().exportData(filePath, filteredMonsters);
                         break;
                     case "XML":
-                        new XmlHandler().exportData(filePath, allMonsters);
+                        new XmlHandler().exportData(filePath, filteredMonsters);
                         break;
                     case "YAML":
-                        new YamlHandler().exportData(filePath, allMonsters);
+                        new YamlHandler().exportData(filePath, filteredMonsters);
                         break;
                 }
 

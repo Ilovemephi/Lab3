@@ -5,7 +5,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,5 +123,5 @@ public class YamlHandler implements Handler {
     options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); 
     options.setPrettyFlow(true); 
     return new Yaml(options);
-}
+    }
 }

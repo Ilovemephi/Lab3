@@ -45,10 +45,19 @@ public class MonsterStorage {
     public void updateMonster(Monster updatedMonster) {
         for (int i = 0; i < monsters.size(); i++) {
             if (monsters.get(i).getName().equals(updatedMonster.getName())) {
-                monsters.set(i, updatedMonster);
-                break;
+                monsters.get(i).setInfo(updatedMonster.getInfo());
             }
         }
+    }
+    
+    public List<Monster> getMonstersByInfoType(String infoType) {
+        List<Monster> filteredMonsters = new ArrayList<>();
+        for (Monster monster : monsters) {
+            if (monster.getInfoType().equalsIgnoreCase(infoType)) {
+                filteredMonsters.add(monster);
+            }
+        }
+        return filteredMonsters;
     }
 
     
