@@ -72,7 +72,6 @@ public class MainFrame extends JFrame {
     private class ExportActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Проверяем, есть ли что экспортировать
         List<Monster> allMonsters = monsterStorage.getAllMonsters();
         if (allMonsters.isEmpty()) {
             JOptionPane.showMessageDialog(
